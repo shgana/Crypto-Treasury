@@ -1,27 +1,66 @@
 # LedgerOps
 
-LedgerOps is an institutional digital-asset operations console for reconciling synthetic positions across an internal ledger, exchanges, custodians, and on-chain wallets. It surfaces explainable operational breaks and provides an auditable analyst workflow.
+**Institutional digital-asset reconciliation and exception management, built for a 90-second operational demo.** LedgerOps gives a treasury or operations analyst one controlled view of synthetic positions across an internal ledger, exchanges, custodians, and wallets—then turns material discrepancies into explainable, auditable work.
 
-> All data is synthetic. This project uses no real client, trading, exchange, custodian, or wallet data and is not affiliated with any exchange, custodian, Ripple, or financial institution.
+> All data is synthetic. LedgerOps contains no real client, trading, exchange, custodian, or wallet data, requires no credentials, and is not affiliated with any exchange, custodian, Ripple, or financial institution.
 
-## Why deterministic reconciliation
+## Live demo
 
-Financial correctness cannot depend on probabilistic output. LedgerOps normalizes source feeds into a canonical model, compares them with explicit tolerances, and stores the records used as evidence. Severity and concentration warnings are transparent rules. AI is deliberately limited to an optional, templated explanation layer and never changes balances, matching, calculations, or severity.
+Deployment configuration is included below. Set `API_URL` to the deployed API before publishing the Vercel frontend; the public URL belongs here once deployment is claimed.
+
+## What it demonstrates
+
+- A ~$25.79M synthetic institutional portfolio and 388 source records, immediately ready to inspect.
+- Deterministic reconciliation with 412 matched items and 7 deliberate operational breaks.
+- A high-impact exception queue, evidence view, analyst assignment/resolution, and append-only activity trail.
+- Transparent exposure, stablecoin, and counterparty-concentration controls.
+
+## Product snapshots
+
+### Overview
+
+![LedgerOps overview](docs/overview.png)
+
+### Exception investigation
+
+![Deterministic exception evidence](docs/exception-investigation.png)
+
+### Audit activity
+
+![Append-only activity trail](docs/activity.png)
 
 ## Architecture
 
+```text
+Next.js / TypeScript UI
+  ├─ institutional overview, reconciliation, exception, activity, settings views
+  └─ API proxy for safe browser-side analyst actions
+              │
+FastAPI / SQLAlchemy API
+  ├─ source adapters: internal ledger, exchange, custodian, wallet
+  ├─ deterministic reconciliation and severity rules
+  ├─ synthetic seeded database and safe reset endpoint
+  └─ SQLite (or Postgres via DATABASE_URL)
 ```
-Next.js + TypeScript dashboard  ->  FastAPI JSON API  -> SQLite / SQLAlchemy
-                                      |-- source adapters
-                                      |-- deterministic reconciliation engine
-                                      |-- seeded synthetic data generator
-```
 
-The SQLAlchemy data layer uses ordinary relational models, so moving from SQLite to Postgres only requires a connection-string change and migration tooling.
+Source-specific schemas are isolated in adapters before becoming canonical positions. Reconciliation is deliberately deterministic: every match or break is driven by asset, account/venue mapping, ID, amount, timestamp window, and explicit tolerances. Evidence records the source IDs and matching rule that produced the result.
 
-## Quick start
+AI is intentionally absent from financial correctness: it never decides balances, reconciliation, calculations, or severity. The current analyst explanation is a deterministic template grounded in the stored evidence.
 
-Open two terminals from the repository root:
+## Intentional synthetic breaks
+
+The repeatable seed includes a missing USDC settlement, BTC quantity mismatch, duplicate ETH transaction, stale wallet snapshot, XRP mark discrepancy, settlement timing difference, and missing exchange withdrawal. It also includes exact and within-tolerance matches.
+
+## 90-second walkthrough
+
+1. Open **Overview**. Call out the $25.79M NAV, 98.4% reconciliation health, and the concentration warning.
+2. Select **Investigate exception** on the highlighted $216K BTC mismatch.
+3. Show the human-readable explanation, severity rationale, and exact deterministic source evidence.
+4. Assign the exception to yourself and mark it resolved.
+5. Open **Activity** to show the audit events created by that action.
+6. Return to **Overview** and point out the exposure controls. Use **Settings → Reset synthetic demo** before the next demo if needed.
+
+## Local setup
 
 ```bash
 python3 -m venv .venv
@@ -30,37 +69,30 @@ python3 -m venv .venv
 .venv/bin/uvicorn backend.main:app --reload --port 8000
 ```
 
+In a second terminal:
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open http://localhost:3000. The UI proxies `/api/*` to FastAPI on port 8000.
+Open http://localhost:3000. The frontend proxies browser actions under `/api/*` to FastAPI.
 
-## 90-second demo
-
-1. Open **Overview** to see NAV, reconciliation health, and concentration alerts.
-2. Open **Exceptions**, select the critical USDC settlement break, and inspect deterministic evidence.
-3. Assign the exception, change its status, or add a comment.
-4. Open **Activity** to see the append-only audit events created by the workflow.
-5. Review **Settings** to see the tolerances and risk thresholds that drive matching and alerts.
-
-## Screenshots
-
-Add screenshots here after running the local demo:
-
-- `docs/overview.png`
-- `docs/exception-detail.png`
-- `docs/activity.png`
-
-## Testing
+## Verification
 
 ```bash
 .venv/bin/pytest backend/tests -q
 cd frontend && npm run build
 ```
 
-## Intentional demo breaks
+## Deploying
 
-The seed contains a missing USDC settlement, BTC quantity mismatch, duplicate transaction, stale wallet snapshot, price mismatch, timing difference, missing exchange withdrawal, and a high Exchange A concentration warning. It also includes hundreds of matched synthetic records and a within-tolerance match.
+The deployment is deliberately split: Vercel hosts the Next.js UI; Render hosts the FastAPI service. Both use only synthetic data.
+
+1. Create a Render Blueprint from this repository. It will use `render.yaml`; set `FRONTEND_ORIGIN` after the Vercel URL exists.
+2. Copy the Render HTTPS URL and set Vercel environment variable `API_URL` to it.
+3. Deploy the `frontend/` directory in Vercel. Set its root directory to `frontend` and redeploy after adding `API_URL`.
+4. Set Render `FRONTEND_ORIGIN` to the exact Vercel origin, then redeploy Render.
+
+The API uses a narrow CORS allowlist (`localhost` plus `FRONTEND_ORIGIN`). `POST /demo/reset` is intentionally unauthenticated only because this is a public, synthetic portfolio demo; it resets no data outside its own demo database.
