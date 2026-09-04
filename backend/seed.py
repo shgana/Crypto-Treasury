@@ -48,7 +48,8 @@ def seed():
         ]
         for idx,(asset,impact,status,venue,title,summary,stale) in enumerate(breaks):
             diff=impact/PRICES[asset]; item=ReconciliationItem(run_id=run.id,asset=asset,internal_quantity=0 if status=="MISSING_INTERNAL" else diff,external_quantity=diff if status=="MISSING_INTERNAL" else 0,difference=diff,usd_impact=impact,source="Internal Ledger ↔ "+venue,venue=venue,status=status,timestamp=NOW-timedelta(hours=stale),evidence={"internal_record":f"OMS-BREAK-{idx}","external_record":f"{venue[:3].upper()}-BREAK-{idx}","matching_rule":status,"tolerance":"quantity 0.01; USD $100; timestamp 30m"});db.add(item);db.flush();add_exception(db,item,status,title,summary,impact,asset, pct=2.1 if status=="BREAK" else 0, stale=stale)
-        for i in range(30):
+        # 360 transaction source records + 28 snapshots give the demo 388 raw source records.
+        for i in range(360):
             external_id = "EXB-ETH-7741" if i in (5,6) else f"TX-{i:03d}"
             db.add(Transaction(external_id=external_id,asset="ETH" if i<10 else "USDC",amount=round(random.uniform(100,5000),2),direction="OUT" if i%2 else "IN",transaction_type="TRANSFER",source="Exchange B",venue="Exchange B",timestamp=NOW-timedelta(minutes=i*5),status="SETTLED"))
         audit(db,"RECONCILIATION_EXECUTED","ReconciliationRun",run.id,"419 matched or within tolerance; 7 exceptions surfaced")
