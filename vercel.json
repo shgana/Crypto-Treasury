@@ -8,8 +8,7 @@
     "backend": {
       "root": ".",
       "framework": "fastapi",
-      "entrypoint": "backend.main:app",
-      "excludeFiles": ["frontend/node_modules/**", ".venv/**", ".next/**"]
+      "entrypoint": "backend.main:app"
     }
   },
   "rewrites": [
