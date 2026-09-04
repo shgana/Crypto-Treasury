@@ -1,3 +1,4 @@
 import type { NextConfig } from "next";
-const nextConfig: NextConfig = { async rewrites() { return [{ source: "/api/:path*", destination: "http://localhost:8000/:path*" }]; } };
+const apiUrl = process.env.API_URL || "http://localhost:8000";
+const nextConfig: NextConfig = { async rewrites() { return [{ source: "/api/:path*", destination: `${apiUrl}/:path*` }]; } };
 export default nextConfig;

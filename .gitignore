@@ -6,3 +6,4 @@ backend/ledgerops.db
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
+.playwright-cli/
