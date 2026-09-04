@@ -25,7 +25,7 @@ def seed():
         db.add_all([Asset(symbol=s, name=n, asset_class=c) for s,n,c in ASSETS])
         db.add_all([Venue(name=n, venue_type=t) for n,t in [("Internal Ledger","internal"),("Exchange A","exchange"),("Exchange B","exchange"),("Custodian A","custodian"),("Custodian B","custodian"),("On-chain Treasury Wallet","wallet"),("On-chain Settlement Wallet","wallet")]])
         db.add_all([Account(id="TREASURY",name="Treasury Master",venue="Internal Ledger"),Account(id="EXA-01",name="Prime Account",venue="Exchange A"),Account(id="CUST-A",name="Safekeeping",venue="Custodian A")])
-        quantities = {"BTC":105, "ETH":1700, "XRP":1550000, "SOL":12000, "USDC":3000000, "USDT":2000000, "USD":1250000}
+        quantities = {"BTC":90, "ETH":1400, "XRP":1200000, "SOL":10000, "USDC":2500000, "USDT":1500000, "USD":1000000}
         # Canonical source snapshots produce a ~$25m portfolio and source evidence.
         for asset, qty in quantities.items():
             for source, account, venue, multiplier in [("Internal Ledger","TREASURY","Internal Ledger",1), ("Exchange A","EXA-01","Exchange A",0.34), ("Custodian A","CUST-A","Custodian A",0.48), ("On-chain Wallet","0xTREASURY","On-chain Treasury Wallet",0.18)]:
