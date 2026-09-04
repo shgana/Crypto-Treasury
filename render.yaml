@@ -2,6 +2,7 @@ services:
   - type: web
     name: ledgerops-api
     runtime: docker
+    dockerfilePath: backend/Dockerfile
     plan: free
     healthCheckPath: /health
     envVars:
