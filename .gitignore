@@ -1,0 +1,8 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.venv/
+backend/ledgerops.db
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
