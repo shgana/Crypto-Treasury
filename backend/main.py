@@ -14,6 +14,13 @@ if os.getenv("FRONTEND_ORIGIN"): origins.append(os.environ["FRONTEND_ORIGIN"].rs
 app = FastAPI(title="LedgerOps API", description="Synthetic deterministic reconciliation demo")
 app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET", "POST", "PATCH"], allow_headers=["Content-Type"])
 
+@app.middleware("http")
+async def service_api_prefix(request, call_next):
+    # Vercel Services routes the API service beneath /api while local FastAPI remains root-mounted.
+    if request.scope["path"].startswith("/api/"):
+        request.scope["path"] = request.scope["path"][4:]
+    return await call_next(request)
+
 @app.on_event("startup")
 def initialize_demo():
     # A first boot is immediately demo-ready. Persistent hosts retain analyst actions until reset.
