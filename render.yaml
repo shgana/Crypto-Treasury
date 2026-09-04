@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ledgerops-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////tmp/ledgerops.db
+      - key: FRONTEND_ORIGIN
+        sync: false
