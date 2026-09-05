@@ -6,7 +6,7 @@
 
 ## Live demo
 
-Deployment configuration is included below. Set `API_URL` to the deployed API before publishing the Vercel frontend; the public URL belongs here once deployment is claimed.
+[Open the public LedgerOps demo →](https://ledgerops-eta.vercel.app)
 
 ## What it demonstrates
 
@@ -86,13 +86,8 @@ Open http://localhost:3000. The frontend proxies browser actions under `/api/*` 
 cd frontend && npm run build
 ```
 
-## Deploying
+## Deployment
 
-The deployment is deliberately split: Vercel hosts the Next.js UI; Render hosts the FastAPI service. Both use only synthetic data.
-
-1. Create a Render Blueprint from this repository. It will use `render.yaml`; set `FRONTEND_ORIGIN` after the Vercel URL exists.
-2. Copy the Render HTTPS URL and set Vercel environment variable `API_URL` to it.
-3. Deploy the `frontend/` directory in Vercel. Set its root directory to `frontend` and redeploy after adding `API_URL`.
-4. Set Render `FRONTEND_ORIGIN` to the exact Vercel origin, then redeploy Render.
+The public demo uses two Vercel production projects: a Next.js frontend at [ledgerops-eta.vercel.app](https://ledgerops-eta.vercel.app) and a FastAPI serverless function at [ledgerops-api.vercel.app](https://ledgerops-api.vercel.app). The frontend’s server-side API URL is configured as a Vercel environment variable; browser actions proxy through `/api/*`.
 
 The API uses a narrow CORS allowlist (`localhost` plus `FRONTEND_ORIGIN`). `POST /demo/reset` is intentionally unauthenticated only because this is a public, synthetic portfolio demo; it resets no data outside its own demo database.
