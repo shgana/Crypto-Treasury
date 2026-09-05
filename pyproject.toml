@@ -6,6 +6,3 @@ dependencies = [
   "fastapi==0.115.12",
   "sqlalchemy==2.0.38",
 ]
-
-[tool.vercel]
-entrypoint = "backend.main:app"
