@@ -1,4 +1,5 @@
 import os
+from urllib.parse import parse_qs
 from datetime import datetime
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,6 +20,9 @@ async def service_api_prefix(request, call_next):
     # Vercel Services routes the API service beneath /api while local FastAPI remains root-mounted.
     if request.scope["path"].startswith("/api/"):
         request.scope["path"] = request.scope["path"][4:]
+    elif request.scope["path"] == "/api":
+        requested = parse_qs(request.scope["query_string"].decode()).get("path", [""])[0]
+        request.scope["path"] = "/" + requested.lstrip("/")
     return await call_next(request)
 
 @app.on_event("startup")
