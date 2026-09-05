@@ -2,6 +2,10 @@
 name = "ledgerops-api"
 version = "0.1.0"
 requires-python = ">=3.12"
+dependencies = [
+  "fastapi==0.115.12",
+  "sqlalchemy==2.0.38",
+]
 
 [tool.vercel]
 entrypoint = "backend.main:app"
